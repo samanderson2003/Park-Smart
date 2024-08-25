@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Booking Information</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Spot</th>
+            <th>Date</th>
+            <th>Time</th>
+        </tr>
+        </thead>
+        <tbody id="bookingTableBody">
+        <!-- Booking information will be dynamically added here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Reference to the booking table body
+        let bookingTableBody = document.getElementById('bookingTableBody');
+
+        // Retrieve and display booking information
+        for (let spotId = 1; spotId <= 9; spotId++) {
+            let bookingInfo = localStorage.getItem('spot_' + spotId);
+            if (bookingInfo) {
+                bookingInfo = JSON.parse(bookingInfo);
+                if (bookingInfo.status === 'booked') {
+                    let row = bookingTableBody.insertRow();
+                    let spotCell = row.insertCell(0);
+                    let dateCell = row.insertCell(1);
+                    let timeCell = row.insertCell(2);
+                    let cancelCell = row.insertCell(3);
+
+                    spotCell.innerHTML = 'Spot ' + spotId;
+                    dateCell.innerHTML = bookingInfo.date;
+                    timeCell.innerHTML = bookingInfo.time;
+
+                    let cancelButton = document.createElement("button");
+                    cancelButton.innerHTML = "Cancel";
+                    cancelButton.onclick = function () {
+                        cancelBooking(spotId);
+                    };
+                    cancelCell.appendChild(cancelButton);
+                }
+            }
+        }
+    });
+
+    // Function to cancel a booking
+    function cancelBooking(spotId) {
+        if (confirm('Are you sure you want to cancel this booking?')) {
+            localStorage.removeItem('spot_' + spotId);
+            let row = document.querySelector('#bookingTableBody tr:nth-child(' + spotId + ')');
+            if (row) {
+                row.remove();
+            }
+        }
+    }
+</script>
+</body>
+</html>
